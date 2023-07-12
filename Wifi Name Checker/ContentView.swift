@@ -6,16 +6,37 @@
 //
 
 import SwiftUI
+import NetworkExtension
 
 struct ContentView: View {
+    @State private var wifiName: String = "Unknown"
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            Text("Wi-Fi Network's name:")
+            Text(wifiName)
+                .font(.headline)
+                .padding()
         }
-        .padding()
+        .onAppear {
+            getWifiName()
+        }
+    }
+
+    func getWifiName() {
+        if let ssid = getSSID() {
+            wifiName = ssid
+        } else {
+            wifiName = "No Wi-Fi Connection"
+        }
+    }
+
+    func getSSID() -> String? {
+        guard let interface = NEHotspotHelper.supportedNetworkInterfaces()?.first else {
+            return nil
+        }
+        
+        return "\((interface as AnyObject).ssid)"
     }
 }
 
